@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/card.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/button.min.css' %}">
+{% endblock %}
+
+{% block content %}
+
+  {% if request.user.is_authenticated %}
+  <div class="item-menu">
+    <a class="ui teal button" href="{% url 'index' %}">Groups</a>
+    <a class="ui basic button" href="{% url 'logout' %}">Sign out</a>
+  </div>
+  {% else %}
+  <div class="item-center">
+    <a id="log-in" class="massive ui primary button" href="{% url 'social:begin' 'vk-oauth2' %}">
+    Log in VK
+    </a>
+  </div>
+  {% endif %}
+
+  <div id='result-container' class="item-row"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/base.js' %}"></script>
+<script type="text/javascript">
+  $('#log-in').click(function() {
+    $(this).addClass('loading');
+  });
+</script>
+{% endblock %}

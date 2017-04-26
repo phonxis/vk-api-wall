@@ -1,0 +1,73 @@
+/*html,body {
+  height: 100%;
+}*/
+
+body {
+  background-color: #f4f4ef!important;
+}
+
+.ui.card {
+  width: 340px!important;
+}
+
+.ui.bottom.attached.button a {
+  text-decoration: none;
+  color: #000;
+}
+
+.item-center {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 20%;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.item-menu {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.post {
+  width: 650px;
+}
+
+.post img {
+  width: 640px;
+}
+
+.item-column {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#load-prev {
+  width: 684px;
+  margin-left: 5px;
+}
+
+.next-btn {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 25px;
+}
+.post-text, .post-info {
+  margin: 0 10px;
+}
+
+.post-date {
+  margin: 10px 10px;
+}

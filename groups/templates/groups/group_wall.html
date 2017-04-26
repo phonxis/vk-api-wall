@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/segment.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/button.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/icon.min.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+  <div class="item-menu">
+    <a class="ui teal button" href="{% url 'index' %}">Groups</a>
+    <a class="ui basic button" href="{% url 'logout' %}">Sign out</a>
+  </div>
+{% endif %}
+  <div id='result-container' class="item-column"></div>
+  <div class="next-btn">
+    <button id="load-prev" class="fluid ui blue basic button">Load Previous</button>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  // функцыя загрузки видеозаписей
+  function testAjax(embed_video_url, handleData) {
+    $.ajax({
+      type: "GET",
+      url: embed_video_url,
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json'
+    }).success(function(data) {
+      handleData(data);
+    }).error(function(err) {
+      console.log(err);
+    })
+  }
+
+  // функция загрузки постов
+  function outData(data) {
+    // список месяцев
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var resultData = "";
+      for (var i = 0; i < data.length; i++) {
+          resultData += "<div class='post ui segment'>"
+          // формируем дату вида 31 May 17 13:30
+          var date = new Date(data[i]['date']*1000);
+          resultData += "<h4 class='ui header post-date'>" + date.getDate() + " "
+                              + months[date.getMonth()] + " "
+                              + date.getFullYear() + " "
+                              + date.getHours() + ":"
+                              + date.getMinutes() + "</h4>";
+          resultData += "<p class='post-text'>" + data[i]['text'] + "</p>";
+          // если есть прикрепленные данные, то загружаем их
+          if (data[i]['attachments'] !== undefined){
+            for (var j = 0; j < data[i]['attachments'].length; j++) {
+              // загрузка фото
+              if (data[i]['attachments'][j]['type'] === "photo") {
+                if (data[i]['attachments'][j]['photo']['photo_1280'] !== undefined){
+                  resultData += "<p><img class='post-img' src='" + data[i]['attachments'][j]['photo']['photo_1280'] + "' /></p>";
+                } else if (data[i]['attachments'][j]['photo']['photo_807'] !== undefined) {
+                  resultData += "<p><img class='post-img' src='" + data[i]['attachments'][j]['photo']['photo_807'] + "' /></p>";
+                } else if (data[i]['attachments'][j]['photo']['photo_604'] !== undefined) {
+                  resultData += "<p><img class='post-img' src='" + data[i]['attachments'][j]['photo']['photo_604'] + "' /></p>";
+                } else if (data[i]['attachments'][j]['photo']['photo_130'] !== undefined) {
+                  resultData += "<p><img class='post-img' src='" + data[i]['attachments'][j]['photo']['photo_130'] + "' /></p>";
+                } else if (data[i]['attachments'][j]['photo']['photo_75'] !== undefined) {
+                  resultData += "<p><img class='post-img' src='" + data[i]['attachments'][j]['photo']['photo_75'] + "' /></p>";
+                }
+              }
+              // отображение аудио
+              if (data[i]['attachments'][j]['type'] === "audio") {
+                resultData += "<p class='post-audio'>"+ data[i]['attachments'][j]['audio']['artist'] + " - "
+                                                      + data[i]['attachments'][j]['audio']['title'] + "</p>";
+              }
+              // загрузка прикрепленных докуметов
+              if (data[i]['attachments'][j]['type'] === "doc") {
+                resultData += "<p class='post-doc'><a href='" + data[i]['attachments'][j]['doc']['url'] + "'>doc</a></p>";
+              }
+              // отображение ссылок
+              if (data[i]['attachments'][j]['type'] === "link") {
+                resultData += "<p><a href='" + data[i]['attachments'][j]['link']['url'] + "'>link</a></p>";
+              }
+              // загрузка видеозаписей
+              if (data[i]['attachments'][j]['type'] === "video") {
+                var embed_video = "http://localhost:8000/owner/" + data[i]['attachments'][j]['video']['owner_id'] +"/video/"
+                                                                 + data[i]['attachments'][j]['video']['id'] + "/";
+                // добавляем id для каждой видеозаписи
+                resultData += "<p id='" + data[i]['attachments'][j]['video']['id'] +"'></p>";
+                testAjax(embed_video, function(out) {
+                  // прикрепляем видеозапись к ее посту
+                  var videoContainer = '#' + out[0]['id'];
+                  $(videoContainer).append("<p><iframe src='" + out[0]['player'] + "' width='640' height='360' frameborder='0' allowfullscreen></iframe></p>");
+                })
+              }
+            }
+          }
+
+          resultData += "<p class='post-info'>Likes: " + data[i]['likes']['count'] + " Reposts: "
+                              + data[i]['reposts']['count'] + "</p>";
+          resultData += "</div>"
+      }
+
+      $('#result-container').append(resultData); // setting result table on page
+  }
+
+  function getData() {
+    var group_url = "http://localhost:8000/group/" + {{ group_id }} + "/load/";
+    $.ajax({
+      type: "GET",
+      url: group_url,
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+    }).success(function(data) {
+      outData(data);
+    }).error(function(err) {
+      console.log(err);
+    })
+  }
+
+  getData();
+
+  function loadPrev() {
+    var countPosts = $('.post').length;
+    var group_url = "http://localhost:8000/group/" + {{ group_id }} + "/load/offset/" + countPosts + "/";
+    $.ajax({
+      type: "GET",
+      url: group_url,
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+    }).success(function(data) {
+      outData(data);
+    }).error(function(err) {
+      console.log(err);
+    })
+  }
+
+  $('#load-prev').on("click", loadPrev);
+</script>
+{% endblock %}
