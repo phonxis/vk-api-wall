@@ -4,7 +4,7 @@ awesome-slugify==1.6.5
 Babel==2.4.0
 billiard==3.5.0.2
 cairocffi==0.8.0
-CairoSVG==2.0.2
+CairoSVG==2.5.1
 captcha==0.2.1
 celery==4.0.2
 cffi==1.10.0
