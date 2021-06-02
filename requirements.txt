@@ -50,7 +50,7 @@ Jinja2==2.8
 kombu==4.0.2
 lxml==3.7.3
 Markdown==2.6.6
-markdown2==2.3.0
+markdown2==2.4.0
 MarkupSafe==0.23
 microsofttranslator==0.8
 oauthlib==1.0.3
