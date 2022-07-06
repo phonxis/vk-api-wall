@@ -48,7 +48,7 @@ html5lib==0.999999999
 itsdangerous==0.24
 Jinja2==2.8
 kombu==4.0.2
-lxml==3.7.3
+lxml==4.9.1
 Markdown==2.6.6
 markdown2==2.3.0
 MarkupSafe==0.23
